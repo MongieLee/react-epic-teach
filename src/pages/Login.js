@@ -1,10 +1,20 @@
-import React from 'react';
+import React, { useRef } from 'react';
 import { observer } from 'mobx-react';
 import { useStores } from '../store';
 
 const Component = observer(() => {
   const { AuthStore } = useStores();
-  return <div>Login{AuthStore.values.username}</div>;
+  const inputRef = useRef(null);
+  const bindChange = () => {
+    console.log(inputRef.current);
+    AuthStore.setUsername(inputRef.current.value);
+  };
+  return (
+    <>
+      <div>Login {AuthStore.values.username}</div>
+      <input onChange={bindChange} ref={inputRef} />
+    </>
+  );
 });
 
 export default Component;

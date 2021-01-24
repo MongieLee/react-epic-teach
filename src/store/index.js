@@ -1,5 +1,5 @@
 import React, { createContext, useContext } from 'react';
-import AuthStore from './auth';
+import { AuthStore } from './auth';
 
 const content = createContext({
   AuthStore: new AuthStore(),
