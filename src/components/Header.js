@@ -1,73 +1,85 @@
-import React, { useState } from "react";
-import { NavLink } from "react-router-dom";
-import logo from "../logo.svg";
-import styled from "styled-components";
-import { Button } from "antd";
+import React, { useState, useEffect } from 'react';
+import { NavLink, useHistory } from 'react-router-dom';
+import styled from 'styled-components';
+import { Button } from 'antd';
+import  {useStores} from '../store';
+import { observer } from 'mobx-react';
+
 
 const Header = styled.header`
-  background-color: #1a2637;
   display: flex;
   align-items: center;
-  color: #fff;
   padding: 10px 100px;
-`;
-
-const StyledLink = styled(NavLink)`
+  background-color: #02101f;
   color: #fff;
-  margin-left: 30px;
-  &.active {
-    border-bottom: 1px solid #fff;
-  }
 `;
 
 const Logo = styled.img`
   height: 30px;
 `;
 
+const StyledLink = styled(NavLink)`
+  color: #fff;
+  margin-left: 30px;
+
+  &.active {
+    border-bottom: 1px solid #fff;
+  }
+`;
+
 const Login = styled.div`
   margin-left: auto;
 `;
 
-const StyleButton = styled(Button)`
-  margin-left: 15px;
+const StyledButton = styled(Button)`
+  margin-left: 10px;
 `;
 
-export default function Component() {
-  const [isLogin, setIsLogin] = useState(false);
-  const x = useState(false);
-  console.log(x);
+
+const  Component = observer(() => {
+
+  const history = useHistory();
+  const { UserStore, AuthStore } = useStores();
+
+  const handleLogout = () => {
+    AuthStore.logout();
+  };
+
+  const handleLogin = () => {
+    console.log('跳转到登录页面')
+    history.push('/login');
+  };
+
+  const handleRegister = () => {
+    console.log('跳转到注册页面')
+    history.push('/register');
+  }
+
+  useEffect(()=>{
+    UserStore.pullUser();
+  },[])
+
   return (
     <Header>
-      <Logo src={logo}></Logo>
       <nav>
-        <StyledLink to="/" activeClassName="active" exact>
-          首页
-        </StyledLink>
-        <StyledLink to="/history" activeClassName="active">
-          上传历史
-        </StyledLink>
-        <StyledLink to="about" activeClassName="active">
-          关于我们
-        </StyledLink>
+        <StyledLink to="/" activeClassName="active" exact>首页</StyledLink>
+        <StyledLink to="/history" activeClassName="active">上传历史</StyledLink>
+        <StyledLink to="/about" activeClassName="active">关于我</StyledLink>
       </nav>
       <Login>
-        {isLogin ? (
-          <>
-            MongieLee
-            <StyleButton type="primary" onClick={() => setIsLogin(false)}>
-              注销
-            </StyleButton>
+        {
+          UserStore.currentUser ? <>
+            {UserStore.currentUser.attributes.username} <StyledButton type="primary" onClick={handleLogout}>注销</StyledButton>
+          </> :<>
+          <StyledButton type="primary" onClick={handleLogin}>登录</StyledButton>
+          <StyledButton type="primary" onClick={handleRegister}>注册</StyledButton>
           </>
-        ) : (
-          <>
-            <StyleButton type="primary" onClick={() => setIsLogin(true)}>
-              登录
-            </StyleButton>
-            <StyleButton>注册</StyleButton>
-          </>
-        )}
+
+        }
       </Login>
+
     </Header>
   );
-}
+});
 
+export default Component;

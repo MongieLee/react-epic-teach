@@ -1,22 +1,8 @@
-import React, { useRef } from 'react';
-import { observer } from 'mobx-react';
+import React from 'react';
 import { useStores } from '../store';
-import { Form, Input, Button, Checkbox } from 'antd';
+import { Form, Input, Button, message } from 'antd';
 import styled from 'styled-components';
-// const Component = observer(() => {
-//   const { AuthStore } = useStores();
-//   const inputRef = useRef(null);
-//   const bindChange = () => {
-//     console.log(inputRef.current);
-//     AuthStore.setUsername(inputRef.current.value);
-//   };
-//   return (
-//     <>
-//       <div>Register {AuthStore.values.username}</div>
-//       <input onChange={bindChange} ref={inputRef} />
-//     </>
-//   );
-// });
+
 const Wrapper = styled.div`
   max-width: 600px;
   margin: 30px auto;
@@ -38,14 +24,22 @@ const layout = {
 };
 const tailLayout = {
   wrapperCol: {
-    offset: 8,
-    span: 16,
+    offset: 6,
+    span: 18,
   },
 };
 
 const Component = () => {
+  const { AuthStore } = useStores();
   const onFinish = (values) => {
-    console.log('Success:', values);
+    AuthStore.setUsername(values.username);
+    AuthStore.setPassword(values.password);
+    AuthStore.register()
+      .then(() => {
+        console.log('注册成功, 跳转到首页')
+      }).catch(() => {
+        console.log('登录失败，什么都不做')
+      });
   };
 
   const onFinishFailed = (errorInfo) => {
@@ -67,10 +61,10 @@ const Component = () => {
 
   const confirmPassword = ({ getFieldValue }) => ({
     validator(rule, value) {
-      if (!value || getFieldValue('password' === value)) {
+      if (getFieldValue('password') === value) {
         return Promise.resolve();
       }
-      return Promise.reject('两次密码不匹配');
+      return Promise.reject('两次密码不一致');
     },
   });
 
@@ -136,7 +130,7 @@ const Component = () => {
 
         <Form.Item {...tailLayout}>
           <Button type='primary' htmlType='submit'>
-            Submit
+            注册
           </Button>
         </Form.Item>
       </Form>
