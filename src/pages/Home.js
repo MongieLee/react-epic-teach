@@ -1,6 +1,19 @@
 import React from "react";
+import { observer } from "mobx-react";
+import { useStores } from "../store";
 
-export default function Home(props) {
+const Home = observer((props) => {
+  const { UserStore } = useStores();
   console.log(props);
-  return <>home</>;
-}
+  return (
+    <>
+      {UserStore.currentUser ? (
+        <>home {UserStore.currentUser.attributes.username}</>
+      ) : (
+        "用户没有登录"
+      )}
+    </>
+  );
+});
+
+export default Home;

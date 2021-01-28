@@ -1,11 +1,15 @@
-import { observable, action } from 'mobx';
-import  Auth from '../models';
+import { observable, action, makeAutoObservable } from "mobx";
+import Auth from "../models";
 
 class UserStore {
-  @observable currentUser = null;
+  constructor() {
+    makeAutoObservable(this);
+  }
 
+  @observable currentUser = null;
+  
   @action pullUser() {
-    this.currentUser = Auth.getCurrentUser()
+    this.currentUser = Auth.getCurrentUser();
   }
 
   @action resetUser() {
@@ -13,4 +17,4 @@ class UserStore {
   }
 }
 
-export default new UserStore() ;
+export default new UserStore();
