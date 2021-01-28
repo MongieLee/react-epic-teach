@@ -1,6 +1,7 @@
 import React from "react";
 import { observer } from "mobx-react";
 import { useStores } from "../store";
+import Uploader from "../components/Uploader";
 
 const Home = observer((props) => {
   const { UserStore } = useStores();
@@ -12,6 +13,7 @@ const Home = observer((props) => {
       ) : (
         "用户没有登录"
       )}
+      <Uploader />
     </>
   );
 });
