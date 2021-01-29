@@ -1,10 +1,9 @@
-import React, { useState, useEffect } from 'react';
-import { NavLink, useHistory } from 'react-router-dom';
-import styled from 'styled-components';
-import { Button } from 'antd';
-import  {useStores} from '../store';
-import { observer } from 'mobx-react';
-
+import React, { useEffect } from "react";
+import { NavLink, useHistory } from "react-router-dom";
+import styled from "styled-components";
+import { Button } from "antd";
+import { useStores } from "../store";
+import { observer } from "mobx-react";
 
 const Header = styled.header`
   display: flex;
@@ -12,10 +11,6 @@ const Header = styled.header`
   padding: 10px 100px;
   background-color: #02101f;
   color: #fff;
-`;
-
-const Logo = styled.img`
-  height: 30px;
 `;
 
 const StyledLink = styled(NavLink)`
@@ -35,9 +30,7 @@ const StyledButton = styled(Button)`
   margin-left: 10px;
 `;
 
-
-const  Component = observer(() => {
-
+const Component = observer(() => {
   const history = useHistory();
   const { UserStore, AuthStore } = useStores();
 
@@ -46,38 +39,47 @@ const  Component = observer(() => {
   };
 
   const handleLogin = () => {
-    console.log('跳转到登录页面')
-    history.push('/login');
+    history.push("/login");
   };
 
   const handleRegister = () => {
-    console.log('跳转到注册页面')
-    history.push('/register');
-  }
+    history.push("/register");
+  };
 
-  useEffect(()=>{
+  useEffect(() => {
     UserStore.pullUser();
-  },[])
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   return (
     <Header>
       <nav>
-        <StyledLink to="/" activeClassName="active" exact>首页</StyledLink>
-        <StyledLink to="/history" activeClassName="active">上传历史</StyledLink>
-        <StyledLink to="/about" activeClassName="active">关于我</StyledLink>
+        <StyledLink to="/" activeClassName="active" exact>
+          首页
+        </StyledLink>
+        <StyledLink to="/history" activeClassName="active">
+          上传历史
+        </StyledLink>
       </nav>
       <Login>
-        {
-          UserStore.currentUser ? <>
-            {UserStore.currentUser.attributes.username} <StyledButton type="primary" onClick={handleLogout}>注销</StyledButton>
-          </> :<>
-          <StyledButton type="primary" onClick={handleLogin}>登录</StyledButton>
-          <StyledButton type="primary" onClick={handleRegister}>注册</StyledButton>
+        {UserStore.currentUser ? (
+          <>
+            {UserStore.currentUser.attributes.username}{" "}
+            <StyledButton type="primary" onClick={handleLogout}>
+              注销
+            </StyledButton>
           </>
-
-        }
+        ) : (
+          <>
+            <StyledButton type="primary" onClick={handleLogin}>
+              登录
+            </StyledButton>
+            <StyledButton type="primary" onClick={handleRegister}>
+              注册
+            </StyledButton>
+          </>
+        )}
       </Login>
-
     </Header>
   );
 });

@@ -10,28 +10,31 @@ class HistoryStore {
   @observable isLoading = false;
   @observable hasMore = true;
   @observable page = 0;
+  @observable total = 0;
   @observable limit = 10;
 
-  @action appen(newDataList) {
-    this.dataList = this.dataList.concat(newDataList);
+  @action setData(newDataList) {
+    this.dataList = newDataList;
+  }
+
+  @action changePage(page) {
+    this.page = page;
   }
 
   @action find() {
     this.isLoading = true;
-    return new Promise((resolve, reject) => {
-      Uploader.find({ page: this.page, limit: this.limit })
-        .then((result) => {
-          this.appen(result);
-          this.page++;
-          if (result.length < this.limit) {
-            this.hasMore = false;
-          }
-        })
-        .catch((err) => message.error("加载失败..."))
-        .finally(() => {
-          this.isLoading = false;
-        });
-    });
+    Uploader.find({ page: this.page, limit: this.limit })
+      .then((result) => {
+        this.setData(result[1]);
+        this.total = result[0];
+      })
+      .catch((err) => {
+        console.error(err);
+        message.error("加载失败...");
+      })
+      .finally(() => {
+        this.isLoading = false;
+      });
   }
 
   @action reset() {
@@ -39,6 +42,7 @@ class HistoryStore {
     this.isLoading = false;
     this.hasMore = true;
     this.page = 0;
+    this.total = 0;
   }
 }
 

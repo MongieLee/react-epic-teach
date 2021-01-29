@@ -55,18 +55,17 @@ const Uploader = {
     const query = new AV.Query("Image");
     query.include("owner");
     query.limit(limit);
-    query.skip(page);
+    query.skip(page * limit);
     query.descending("createdAt");
     query.equalTo("owner", AV.User.current());
     return new Promise((resolve, reject) => {
-      query.find().then(
-        (result) => {
+      Promise.all([query.count(), query.find()])
+        .then((result) => {
           resolve(result);
-        },
-        (err) => {
-          reject(err);
-        }
-      );
+        })
+        .catch((error) => {
+          reject(error);
+        });
     });
   },
 };

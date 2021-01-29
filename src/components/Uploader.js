@@ -1,7 +1,7 @@
-import React, { useRef } from "react";
+import React from "react";
 import { useStores } from "../store";
 import { observer, useLocalStore } from "mobx-react";
-import { Upload, Image, message, Spin } from "antd";
+import { Upload, Image, message, Spin, InputNumber } from "antd";
 import { InboxOutlined } from "@ant-design/icons";
 import styled from "styled-components";
 const { Dragger } = Upload;
@@ -10,16 +10,14 @@ const Result = styled.div`
   margin-top: 30px;
   border: 1px dashed #ccc;
   padding: 20px;
-  > h1 {
+  background-color: white;
+  > h2 {
     text-align: center;
-    margin: 20px 0;
   }
 `;
 
 const Component = observer(() => {
   const { ImageStore, UserStore } = useStores();
-  const widthRef = useRef();
-  const heightRef = useRef();
   const localStore = useLocalStore(() => ({
     width: "",
     height: "",
@@ -42,7 +40,6 @@ const Component = observer(() => {
   const props = {
     showUploadList: false,
     beforeUpload(file) {
-      console.log(file);
       ImageStore.setFile(file);
       ImageStore.setFilename(file.name);
       if (!UserStore.currentUser) {
@@ -66,16 +63,16 @@ const Component = observer(() => {
     },
   };
 
-  const handleMaxWidth = () => {
-    localStore.setWidthStr(widthRef.current.value);
+  const handleMaxWidth = (value) => {
+    localStore.setWidthStr(value);
   };
-  const handleMaxHeight = () => {
-    localStore.setHeightStr(heightRef.current.value);
+  const handleMaxHeight = (value) => {
+    localStore.setHeightStr(value);
   };
 
   return (
     <div>
-      <h1>文件上传</h1>
+      <h1>图片上传</h1>
       <Spin tip="图片上传中..." spinning={ImageStore.isUploading}>
         <Dragger {...props}>
           <p className="ant-upload-drag-icon">
@@ -90,51 +87,57 @@ const Component = observer(() => {
       <div>
         {ImageStore.serverFile && (
           <Result>
-            <h1>上传结果</h1>
-            <dl>
-              <dt>可预览地址</dt>
-              <dd>
+            <h2>上传结果：</h2>
+            <section>
+              <div>文件名：{ImageStore.filename}</div>
+              <div>
+                图片地址：
                 <a
+                  style={{
+                    color: "#1890ff",
+                  }}
                   target="_blank"
                   rel="noopener noreferrer"
                   href={ImageStore.serverFile.attributes.url.attributes.url}
                 >
                   {ImageStore.serverFile.attributes.url.attributes.url}
                 </a>
-              </dd>
-              <dt>文件名</dt>
-              <dd>{ImageStore.filename}</dd>
-              <dt>图片预览</dt>
-              <dd>
-                <Image
-                  style={{ maxWidth: 300 }}
-                  src={ImageStore.serverFile.attributes.url.attributes.url}
-                />
-              </dd>
-              <dt>更多尺寸</dt>
-              <dd>
-                <input
+              </div>
+              <Image
+                style={{ maxWidth: 300 }}
+                src={ImageStore.serverFile.attributes.url.attributes.url}
+              />
+              <p>可自定义图片的最大宽度及最大高度</p>
+              <div>
+                <InputNumber
+                  style={{ width: 300 }}
                   placeholder="最大宽度(可选)"
-                  ref={widthRef}
                   onChange={handleMaxWidth}
                 />
-                <input
-                  ref={heightRef}
+                <InputNumber
+                  style={{ marginLeft: "2em", width: 300 }}
                   placeholder="最大高度(可选)"
                   onChange={handleMaxHeight}
                 />
-              </dd>
-              <dt>修改尺寸后的预览链接</dt>
-              <dd>
+              </div>
+              <div
+                style={{
+                  marginTop: "1em",
+                }}
+              >
+                自定义最大宽高后的图片地址：
                 <a
+                  style={{
+                    color: "#1890ff",
+                  }}
                   target="_blank"
                   rel="noopener noreferrer"
                   href={localStore.fullStr}
                 >
                   {localStore.fullStr}
                 </a>
-              </dd>
-            </dl>
+              </div>
+            </section>
           </Result>
         )}
       </div>

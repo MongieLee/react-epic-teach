@@ -30,7 +30,7 @@ class AuthStore {
         })
         .catch((err) => {
           UserStore.resetUser();
-          message.error("登录失败");
+          message.error("账号或密码错误");
           reject(err);
         });
     });

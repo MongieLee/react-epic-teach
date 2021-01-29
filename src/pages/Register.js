@@ -1,6 +1,6 @@
 import React from "react";
 import { useStores } from "../store";
-import { Form, Input, Button, message } from "antd";
+import { Form, Input, Button } from "antd";
 import styled from "styled-components";
 import { useHistory } from "react-router-dom";
 
@@ -38,16 +38,9 @@ const Component = () => {
     AuthStore.setPassword(values.password);
     AuthStore.register()
       .then(() => {
-        console.log("注册成功, 跳转到首页");
         history.push("/");
       })
-      .catch(() => {
-        console.log("登录失败，什么都不做");
-      });
-  };
-
-  const onFinishFailed = (errorInfo) => {
-    console.log("Failed:", errorInfo);
+      .catch(() => {});
   };
 
   const validateUsername = (rule, value) => {
@@ -55,10 +48,10 @@ const Component = () => {
       return Promise.reject("不能出现字母数字下划线以外的字符");
     }
     if (value.length < 3) {
-      return Promise.reject("用户名不能长度小于3");
+      return Promise.reject("用户名长度不能小于3个字符");
     }
     if (value.length > 10) {
-      return Promise.reject("用户名不能长度大于10");
+      return Promise.reject("用户名长度不能大于10个字符");
     }
     return Promise.resolve();
   };
@@ -79,7 +72,6 @@ const Component = () => {
         {...layout}
         name="basic"
         onFinish={onFinish}
-        onFinishFailed={onFinishFailed}
       >
         <Form.Item
           label="用户名"
