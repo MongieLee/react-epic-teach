@@ -1,9 +1,10 @@
-import React from 'react'
-
+import React from "react";
+import List from "../components/List";
 export default function History() {
-    return (
-        <>
-            History
-        </>
-    )
+  return (
+    <>
+      History
+      <List />
+    </>
+  );
 }
