@@ -1,6 +1,6 @@
 import { observable, action, makeAutoObservable } from "mobx";
 import { Uploader } from "../models";
-
+import { message } from "antd";
 class ImageStore {
   constructor() {
     makeAutoObservable(this);
@@ -21,13 +21,17 @@ class ImageStore {
 
   @action upload() {
     this.isUploading = true;
+    this.serverFile = null;
     return new Promise((resolve, reject) => {
       Uploader.upload(this.file, this.filename)
         .then((serverFile) => {
           this.serverFile = serverFile;
           resolve(serverFile);
         })
-        .catch((err) => reject(err))
+        .catch((err) => {
+          message.error("上传失败！");
+          reject(err);
+        })
         .finally(() => {
           this.isUploading = false;
         });

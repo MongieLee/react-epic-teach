@@ -1,7 +1,7 @@
 import { observable, action, makeAutoObservable } from "mobx";
 import { Auth } from "../models";
 import UserStore from "./user";
-
+import { message } from "antd";
 class AuthStore {
   constructor() {
     makeAutoObservable(this);
@@ -28,6 +28,7 @@ class AuthStore {
         })
         .catch((err) => {
           UserStore.resetUser();
+          message.error("注册成功");
           reject(err);
         });
     });
@@ -42,6 +43,7 @@ class AuthStore {
         })
         .catch((err) => {
           UserStore.resetUser();
+          message.error("注册失败");
           reject(err);
         });
     });
