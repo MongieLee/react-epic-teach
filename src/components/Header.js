@@ -4,6 +4,7 @@ import styled from "styled-components";
 import { Button } from "antd";
 import { useStores } from "../store";
 import { observer } from "mobx-react";
+import LogoUrl from '../logo.svg';
 
 const Header = styled.header`
   display: flex;
@@ -11,6 +12,10 @@ const Header = styled.header`
   padding: 10px 100px;
   background-color: #02101f;
   color: #fff;
+`;
+
+const Logo = styled.img`
+  height: 30px;
 `;
 
 const StyledLink = styled(NavLink)`
@@ -53,6 +58,7 @@ const Component = observer(() => {
 
   return (
     <Header>
+      <Logo src={LogoUrl} />
       <nav>
         <StyledLink to="/" activeClassName="active" exact>
           首页
