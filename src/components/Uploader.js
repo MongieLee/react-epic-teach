@@ -1,13 +1,44 @@
 import React, { useRef } from "react";
 import { useStores } from "../store";
-import { observer } from "mobx-react";
+import { observer, useLocalStore } from "mobx-react";
 import { Upload, Image, message } from "antd";
 import { InboxOutlined } from "@ant-design/icons";
-
+import styled from "styled-components";
 const { Dragger } = Upload;
+
+const Result = styled.div`
+  margin-top: 30px;
+  border: 1px dashed #ccc;
+  padding: 20px;
+  > h1 {
+    text-align: center;
+    margin: 20px 0;
+  }
+`;
 
 const Component = observer(() => {
   const { ImageStore, UserStore } = useStores();
+  const widthRef = useRef();
+  const heightRef = useRef();
+  const localStore = useLocalStore(() => ({
+    width: "",
+    height: "",
+    get widthStr() {
+      return this.width ? `/w/${this.width}` : "";
+    },
+    setWidthStr(width) {
+      this.width = width;
+    },
+    get heightStr() {
+      return this.height ? `/h/${this.height}` : "";
+    },
+    setHeightStr(height) {
+      this.height = height;
+    },
+    get fullStr() {
+      return `${ImageStore.serverFile.attributes.url.attributes.url}?imageView2/0${this.widthStr}${this.heightStr}`;
+    },
+  }));
   const props = {
     showUploadList: false,
     beforeUpload(file) {
@@ -27,6 +58,13 @@ const Component = observer(() => {
     },
   };
 
+  const handleMaxWidth = () => {
+    localStore.setWidthStr(widthRef.current.value);
+  };
+  const handleMaxHeight = () => {
+    localStore.setHeightStr(heightRef.current.value);
+  };
+
   return (
     <div>
       <h1>文件上传</h1>
@@ -40,17 +78,55 @@ const Component = observer(() => {
         </p>
       </Dragger>
       <div>
-        <h1>上传结果</h1>
         {ImageStore.serverFile && (
-          <>
-            <Image
-              width={200}
-              src={ImageStore.serverFile.attributes.url.attributes.url}
-            />
-            <p>{ImageStore.serverFile.attributes.url.attributes.url}</p>
-          </>
+          <Result>
+            <h1>上传结果</h1>
+            <dl>
+              <dt>可预览地址</dt>
+              <dd>
+                <a
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  href={ImageStore.serverFile.attributes.url.attributes.url}
+                >
+                  {ImageStore.serverFile.attributes.url.attributes.url}
+                </a>
+              </dd>
+              <dt>文件名</dt>
+              <dd>{ImageStore.filename}</dd>
+              <dt>图片预览</dt>
+              <dd>
+                <Image
+                  style={{ maxWidth: 300 }}
+                  src={ImageStore.serverFile.attributes.url.attributes.url}
+                />
+              </dd>
+              <dt>更多尺寸</dt>
+              <dd>
+                <input
+                  placeholder="最大宽度(可选)"
+                  ref={widthRef}
+                  onChange={handleMaxWidth}
+                />
+                <input
+                  ref={heightRef}
+                  placeholder="最大高度(可选)"
+                  onChange={handleMaxHeight}
+                />
+              </dd>
+              <dt>修改尺寸后的预览链接</dt>
+              <dd>
+                <a
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  href={localStore.fullStr}
+                >
+                  {localStore.fullStr}
+                </a>
+              </dd>
+            </dl>
+          </Result>
         )}
-        {}
       </div>
     </div>
   );
